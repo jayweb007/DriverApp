@@ -18,7 +18,7 @@ const NewOrderPopup = ({
         onPress={onDecline}
         style={[
           styles.cancelButton,
-          { position: "absolute", top: 40, left: 20 },
+          { position: "absolute", top: 50, left: 20 },
         ]}
       >
         <Text style={{ color: "whitesmoke", fontSize: 20, fontWeight: "bold" }}>
@@ -32,7 +32,7 @@ const NewOrderPopup = ({
         onPress={onAccept}
         style={[
           styles.cancelButton,
-          { position: "absolute", top: 40, right: 20 },
+          { position: "absolute", top: 50, right: 20 },
         ]}
       >
         <Text style={{ color: "whitesmoke", fontSize: 20, fontWeight: "bold" }}>
@@ -115,6 +115,7 @@ export default NewOrderPopup;
 const styles = StyleSheet.create({
   container: {
     position: "absolute",
+    top: 0,
     width: "100%",
     height: "100%",
     alignItems: "center",

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import {
   StyleSheet,
   View,
@@ -19,6 +19,7 @@ import NewOrderPopup from "../components/NewOrderPopup";
 
 const droppingOff = { latitude: 6.50359, longitude: 3.37254 }; //Use it as Drivers location to test DROPPING OFF
 const { width, height } = Dimensions.get("window");
+const myAndroidPhone = { latitude: 6.4796062, longitude: 3.3885727 };
 
 //
 const Home = () => {
@@ -265,10 +266,16 @@ const Home = () => {
           latitudeDelta: 0.0222,
           longitudeDelta: 0.0121,
         }}
+        // onLayout={() =>
+        //   mapRef.fitToCoordinates([myPosition, getDestination()], {
+        //     edgePadding: { top: 50, right: 50, bottom: 50, left: 50 },
+        //     animated: false,
+        //   })
+        // }
       >
         {order && (
           <MapViewDirections
-            origin={myPosition} //Driver's POSITION
+            origin={Platform.OS == "android" ? "mutedStandard" : myPosition} //Driver's POSITION
             destination={getDestination()} //User's POSITION
             onReady={goingToUser}
             apikey={ENV_GOOGLE_DIRECTION_KEY}
@@ -282,7 +289,7 @@ const Home = () => {
         onPress={() => console.warn("Balance")}
         style={[
           styles.balanceButton,
-          { top: Platform.OS == "android" ? 40 : 20 },
+          { top: Platform.OS == "android" ? 50 : 50 },
         ]}
       >
         <Text style={{ color: "whitesmoke", fontSize: 25, fontWeight: "bold" }}>
@@ -297,7 +304,7 @@ const Home = () => {
         onPress={() => console.warn("Menu")}
         style={[
           styles.iconsButton,
-          { top: Platform.OS == "android" ? 40 : 20, left: 15 },
+          { top: Platform.OS == "android" ? 50 : 50, left: 15 },
         ]}
       >
         <Entypo name="menu" size={30} color="#4a4a4a" />
@@ -306,7 +313,7 @@ const Home = () => {
         onPress={() => console.warn("Search")}
         style={[
           styles.iconsButton,
-          { top: Platform.OS == "android" ? 40 : 20, right: 15 },
+          { top: Platform.OS == "android" ? 50 : 50, right: 15 },
         ]}
       >
         <FontAwesome name="search" size={24} color="#4a4a4a" />
