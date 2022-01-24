@@ -409,7 +409,7 @@ const Home = () => {
         <Entypo name="menu" size={30} color="#4a4a4a" />
       </View>
 
-      {newOrders.length > 0 && !order && (
+      {car?.isActive && newOrders.length > 0 && !order && (
         <NewOrderPopup
           newOrder={newOrders[0]}
           onDecline={onDecline}
