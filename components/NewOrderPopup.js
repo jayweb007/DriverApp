@@ -83,7 +83,7 @@ const NewOrderPopup = ({
               paddingTop: 15,
             }}
           >
-            {distance} miles
+            {distance} km
           </Text>
         </View>
         <View style={styles.text}>
@@ -135,7 +135,7 @@ const styles = StyleSheet.create({
   popupContainer: {
     position: "absolute",
     height: 290,
-    bottom: 0,
+    bottom: 70,
     width: "100%",
     backgroundColor: "black",
     borderRadius: 10,

@@ -91,8 +91,8 @@ const Home = () => {
 
   //bottom NAV Views
   const bottomTitle = () => {
-    // if (order && order.isFinished)
-    if (true) {
+    // if (true)
+    if (order && order.isFinished) {
       return (
         <View
           style={{
@@ -167,7 +167,7 @@ const Home = () => {
                 color: "#0F0E0E",
               }}
             >
-              {order.distance ? order.distance.toFixed(1) : "0"} miles
+              {order.distance ? order.distance.toFixed(1) : "0"} km
             </Text>
           </View>
           <Text
@@ -220,7 +220,7 @@ const Home = () => {
                 // paddingTop: 15,
               }}
             >
-              {order.distance ? order.distance.toFixed(1) : "0"} miles
+              {order.distance ? order.distance.toFixed(1) : "0"} km
             </Text>
           </View>
           <Text
@@ -256,7 +256,7 @@ const Home = () => {
       <MapView
         style={styles.map}
         provider={PROVIDER_GOOGLE}
-        mapType={Platform.OS == "android" ? "none" : "mutedStandard"}
+        mapType={Platform.OS == "android" ? "mutedStandard" : "mutedStandard"}
         showsUserLocation={true}
         onUserLocationChange={onUserLocationChange}
         initialRegion={{
@@ -280,7 +280,10 @@ const Home = () => {
 
       <Pressable
         onPress={() => console.warn("Balance")}
-        style={[styles.balanceButton, { top: 20 }]}
+        style={[
+          styles.balanceButton,
+          { top: Platform.OS == "android" ? 40 : 20 },
+        ]}
       >
         <Text style={{ color: "whitesmoke", fontSize: 25, fontWeight: "bold" }}>
           <Text style={{ color: "green", fontSize: 25, fontWeight: "bold" }}>
@@ -292,25 +295,31 @@ const Home = () => {
 
       <Pressable
         onPress={() => console.warn("Menu")}
-        style={[styles.iconsButton, { top: 20, left: 15 }]}
+        style={[
+          styles.iconsButton,
+          { top: Platform.OS == "android" ? 40 : 20, left: 15 },
+        ]}
       >
         <Entypo name="menu" size={30} color="#4a4a4a" />
       </Pressable>
       <Pressable
         onPress={() => console.warn("Search")}
-        style={[styles.iconsButton, { top: 20, right: 15 }]}
+        style={[
+          styles.iconsButton,
+          { top: Platform.OS == "android" ? 40 : 20, right: 15 },
+        ]}
       >
         <FontAwesome name="search" size={24} color="#4a4a4a" />
       </Pressable>
       <Pressable
         onPress={() => console.warn("SafeGuard")}
-        style={[styles.iconsButton, { bottom: 110, left: 15 }]}
+        style={[styles.iconsButton, { bottom: 200, left: 15 }]}
       >
         <MaterialIcons name="verified-user" size={24} color="#0779E4" />
       </Pressable>
       <Pressable
         onPress={() => console.warn("Message")}
-        style={[styles.iconsButton, { bottom: 110, right: 15 }]}
+        style={[styles.iconsButton, { bottom: 200, right: 15 }]}
       >
         <MaterialCommunityIcons
           name="message-alert"
@@ -322,7 +331,7 @@ const Home = () => {
         onPress={onGoButton}
         style={[
           styles.goButton,
-          { bottom: 110, backgroundColor: isOnline ? "#E02401" : "#0779E4" },
+          { bottom: 200, backgroundColor: isOnline ? "#E02401" : "#0779E4" },
         ]}
       >
         {isOnline ? (
@@ -364,14 +373,14 @@ export default Home;
 
 const styles = StyleSheet.create({
   container: {
-    // flex: 1,
+    // height: height,
     backgroundColor: "#fff",
     alignItems: "center",
     justifyContent: "center",
   },
   map: {
     width: width,
-    height: height - 150,
+    height: height,
   },
   iconsButton: {
     position: "absolute",
@@ -424,13 +433,17 @@ const styles = StyleSheet.create({
     // borderColor: "whitesmoke",
   },
   bottomContainer: {
+    position: "absolute",
+    bottom: 0,
+    left: 0,
+    right: 0,
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
     paddingHorizontal: 10,
-    paddingVertical: 30,
+    paddingBottom: 30,
     width: width,
-    height: 100,
+    height: height / 5,
     backgroundColor: "white",
     shadowColor: "lightgrey",
     shadowOpacity: 25,

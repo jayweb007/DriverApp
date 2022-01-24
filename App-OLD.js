@@ -18,3 +18,12 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
 });
+
+// return (
+//   <>
+//     <StatusBar style="auto" />
+//     <SafeAreaView>
+//     <Home />
+//     </SafeAreaView>
+//   </>
+// );
