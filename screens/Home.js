@@ -32,7 +32,7 @@ const Home = () => {
   const [order, setOrder] = useState(null);
   const [newOrders, setNewOrders] = useState([]);
 
-  //getting CAR DETAILS for server via useEFFECT
+  //getting CAR DETAILS from server via useEFFECT
   const fetchCar = async () => {
     try {
       const userData = await Auth.currentAuthenticatedUser();
@@ -171,7 +171,7 @@ const Home = () => {
               marginTop: 5,
             }}
           >
-            {order.user.name}'s Ride Complete {""}
+            {order.user?.username}'s Ride Complete {""}
             <FontAwesome name="thumbs-up" size={20} color="#FABB51" />
           </Text>
         </View>
@@ -222,7 +222,7 @@ const Home = () => {
               marginTop: 5,
             }}
           >
-            Dropping off {order.user.name}
+            Dropping off {order.user?.username}
           </Text>
         </View>
       );
@@ -275,7 +275,7 @@ const Home = () => {
               marginTop: 5,
             }}
           >
-            Picking up {order.user.name}
+            Picking up {order.user?.username}
           </Text>
         </View>
       );
