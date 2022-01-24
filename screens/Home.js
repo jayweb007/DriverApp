@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   StyleSheet,
   View,
@@ -16,14 +16,17 @@ import { FontAwesome } from "@expo/vector-icons";
 import { MaterialIcons } from "@expo/vector-icons";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import NewOrderPopup from "../components/NewOrderPopup";
+import { Auth, API, graphqlOperation } from "aws-amplify";
+import { getCar } from "../src/graphql/queries";
+import { updateCar } from "../src/graphql/mutations";
 
 const droppingOff = { latitude: 6.50359, longitude: 3.37254 }; //Use it as Drivers location to test DROPPING OFF
-const { width, height } = Dimensions.get("window");
 const myAndroidPhone = { latitude: 6.4796062, longitude: 3.3885727 };
+const { width, height } = Dimensions.get("window");
 
 //
 const Home = () => {
-  const [isOnline, setIsOnline] = useState(false);
+  const [car, setCar] = useState(null);
   const [showAcceptButton, setShowAcceptButton] = useState(true);
   const [myPosition, setMyPosition] = useState(null);
   const [order, setOrder] = useState(null);
@@ -43,18 +46,55 @@ const Home = () => {
     },
   });
 
+  //getting CAR DETAILS for server via useEFFECT
+  const fetchCar = async () => {
+    try {
+      const userData = await Auth.currentAuthenticatedUser();
+      const carData = await API.graphql(
+        graphqlOperation(getCar, {
+          id: userData.attributes.sub,
+        })
+      );
+      setCar(carData.data.getCar);
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  useEffect(() => {
+    fetchCar();
+  }, []);
+
+  //
   const onAccept = () => {
     setOrder(newOrder);
 
     setShowAcceptButton(!showAcceptButton);
   };
-
+  //
   const onDecline = () => {
     setNewOrder(null);
   };
 
-  const onGoButton = () => {
-    setIsOnline(!isOnline);
+  // update car and set it to active i.e DRIVER goes LIVE
+  const onGoButton = async () => {
+    try {
+      const userData = await Auth.currentAuthenticatedUser();
+      const input = {
+        id: userData.attributes.sub,
+        isActive: !car.isActive,
+      };
+      const updatedCarData = await API.graphql(
+        graphqlOperation(updateCar, {
+          input: input,
+        })
+      );
+
+      setCar(updatedCarData.data.updateCar);
+      //
+    } catch (e) {
+      console.error(e);
+    }
   };
   // To get Driver's POSITION
   const onUserLocationChange = (event) => {
@@ -237,7 +277,7 @@ const Home = () => {
         </View>
       );
     }
-    if (isOnline) {
+    if (car?.isActive) {
       return (
         <Text style={{ fontSize: 25, color: "#3E7C17", fontWeight: "500" }}>
           You're online
@@ -338,10 +378,13 @@ const Home = () => {
         onPress={onGoButton}
         style={[
           styles.goButton,
-          { bottom: 200, backgroundColor: isOnline ? "#E02401" : "#0779E4" },
+          {
+            bottom: 200,
+            backgroundColor: car?.isActive ? "#E02401" : "#0779E4",
+          },
         ]}
       >
-        {isOnline ? (
+        {car?.isActive ? (
           <Text
             style={{ color: "whitesmoke", fontSize: 30, fontWeight: "bold" }}
           >
