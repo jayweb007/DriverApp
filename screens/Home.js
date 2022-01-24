@@ -275,7 +275,7 @@ const Home = () => {
       >
         {order && (
           <MapViewDirections
-            origin={Platform.OS == "android" ? "mutedStandard" : myPosition} //Driver's POSITION
+            origin={myPosition} //Driver's POSITION
             destination={getDestination()} //User's POSITION
             onReady={goingToUser}
             apikey={ENV_GOOGLE_DIRECTION_KEY}
