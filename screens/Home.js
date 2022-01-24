@@ -16,8 +16,9 @@ import { FontAwesome } from "@expo/vector-icons";
 import { MaterialIcons } from "@expo/vector-icons";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import NewOrderPopup from "../components/NewOrderPopup";
+
 import { Auth, API, graphqlOperation } from "aws-amplify";
-import { getCar } from "../src/graphql/queries";
+import { getCar, listOrders } from "../src/graphql/queries";
 import { updateCar } from "../src/graphql/mutations";
 
 const droppingOff = { latitude: 6.50359, longitude: 3.37254 }; //Use it as Drivers location to test DROPPING OFF
@@ -27,24 +28,9 @@ const { width, height } = Dimensions.get("window");
 //
 const Home = () => {
   const [car, setCar] = useState(null);
-  const [showAcceptButton, setShowAcceptButton] = useState(true);
   const [myPosition, setMyPosition] = useState(null);
   const [order, setOrder] = useState(null);
-  const [newOrder, setNewOrder] = useState({
-    id: "1",
-    type: "UberX",
-
-    originLatitude: 6.50659,
-    originLongitude: 3.37454,
-
-    destLatitude: 6.51945,
-    destLongitude: 3.37198,
-
-    user: {
-      name: "Dorcas",
-      rating: 4.7,
-    },
-  });
+  const [newOrders, setNewOrders] = useState([]);
 
   //getting CAR DETAILS for server via useEFFECT
   const fetchCar = async () => {
@@ -61,22 +47,39 @@ const Home = () => {
     }
   };
 
+  //fecth oders from server
+  const fetchOders = async () => {
+    try {
+      const ordersData = await API.graphql(
+        graphqlOperation(
+          listOrders
+          // {filter: {status: {eq: 'NEW' } } }
+        )
+      );
+      setNewOrders(ordersData.data.listOrders.items);
+      //
+    } catch (e) {
+      console.error(e);
+    }
+  };
+
   useEffect(() => {
     fetchCar();
+    fetchOders();
   }, []);
 
   //
-  const onAccept = () => {
+  const onAccept = (newOrder) => {
     setOrder(newOrder);
 
-    setShowAcceptButton(!showAcceptButton);
+    setNewOrders(newOrders.slice(1));
   };
   //
   const onDecline = () => {
-    setNewOrder(null);
+    setNewOrders(newOrders.slice(1));
   };
 
-  // update car and set it to active i.e DRIVER goes LIVE
+  // update car and set it to active i.e DRIVER goes LIVE.
   const onGoButton = async () => {
     try {
       const userData = await Auth.currentAuthenticatedUser();
@@ -406,13 +409,13 @@ const Home = () => {
         <Entypo name="menu" size={30} color="#4a4a4a" />
       </View>
 
-      {newOrder && showAcceptButton && (
+      {newOrders.length > 0 && !order && (
         <NewOrderPopup
-          newOrder={newOrder}
-          onAccept={onAccept}
+          newOrder={newOrders[0]}
           onDecline={onDecline}
           duration={2}
           distance={1.5}
+          onAccept={() => onAccept(newOrders[0])}
         />
       )}
     </View>
