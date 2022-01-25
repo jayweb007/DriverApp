@@ -99,9 +99,30 @@ const Home = () => {
       console.error(e);
     }
   };
-  // To get Driver's POSITION
-  const onUserLocationChange = (event) => {
-    setMyPosition(event.nativeEvent.coordinate);
+
+  // To get Driver's POSITION when driving(on motion)
+  const onUserLocationChange = async (event) => {
+    const { latitude, longitude, heading } = event.nativeEvent.coordinate;
+
+    try {
+      const userData = await Auth.currentAuthenticatedUser();
+      const input = {
+        id: userData.attributes.sub,
+        latitude,
+        longitude,
+        heading,
+      };
+      const updatedCarData = await API.graphql(
+        graphqlOperation(updateCar, {
+          input: input,
+        })
+      );
+
+      setCar(updatedCarData.data.updateCar);
+      //
+    } catch (e) {
+      console.error(e);
+    }
   };
 
   // distance and duration to USER
@@ -120,13 +141,13 @@ const Home = () => {
   //getting destination from DRIVER to USER & from USER to USER Destination
   const getDestination = () => {
     if (order && order.pickedup) {
-      //USER to USER destination, TO TEST: set Driver Loation to user's location
+      //USER to USER destination, TO TEST: set Driver Location to user's location
       return {
         latitude: order.destLatitude,
         longitude: order.destLongitude,
       };
     }
-    //DRIVER to USER destination
+    //DRIVER to USER destination TO TEST: set USER location here
     return {
       latitude: order.originLatitude,
       longitude: order.originLongitude,
