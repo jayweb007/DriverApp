@@ -19,7 +19,7 @@ import NewOrderPopup from "../components/NewOrderPopup";
 
 import { Auth, API, graphqlOperation } from "aws-amplify";
 import { getCar, listOrders } from "../src/graphql/queries";
-import { updateCar } from "../src/graphql/mutations";
+import { updateCar, updateOrder } from "../src/graphql/mutations";
 
 const droppingOff = { latitude: 6.50359, longitude: 3.37254 }; //Use it as Drivers location to test DROPPING OFF
 const myAndroidPhone = { latitude: 6.4796062, longitude: 3.3885727 };
@@ -47,14 +47,11 @@ const Home = () => {
     }
   };
 
-  //fecth oders from server
+  //fecth NEW Orders from server
   const fetchOders = async () => {
     try {
       const ordersData = await API.graphql(
-        graphqlOperation(
-          listOrders
-          // {filter: {status: {eq: 'NEW' } } }
-        )
+        graphqlOperation(listOrders, { filter: { status: { eq: "NEW" } } })
       );
       setNewOrders(ordersData.data.listOrders.items);
       //
@@ -63,14 +60,26 @@ const Home = () => {
     }
   };
 
+  //using useEFFECT to call the Function
   useEffect(() => {
     fetchCar();
     fetchOders();
   }, []);
 
   //
-  const onAccept = (newOrder) => {
-    setOrder(newOrder);
+  const onAccept = async (newOrder) => {
+    try {
+      const input = {
+        id: newOrder.id,
+        status: "PICKING_UP_CLIENT",
+        carId: car.id,
+      };
+      const orderData = await API.graphql(
+        graphqlOperation(updateOrder, { input })
+      );
+
+      setOrder(orderData.data.updateOrder);
+    } catch (e) {}
 
     setNewOrders(newOrders.slice(1));
   };
@@ -100,7 +109,7 @@ const Home = () => {
     }
   };
 
-  // To get Driver's POSITION when driving(on motion)
+  // To get Driver's POSITION when driving(on motion)...you need to show this to USER on MAP
   const onUserLocationChange = async (event) => {
     const { latitude, longitude, heading } = event.nativeEvent.coordinate;
 
@@ -132,13 +141,13 @@ const Home = () => {
         ...order,
         distance: event.distance,
         duration: event.duration,
-        pickedup: order.pickedup || event.distance < 0.2,
-        isFinished: order.pickedup && event.distance < 0.2,
+        pickedup: order.pickedup || event.distance < 0.2, //this shows u picked up USER
+        isFinished: order.pickedup && event.distance < 0.2, //this shows you complete USERS TRIP
       });
     }
   };
 
-  //getting destination from DRIVER to USER & from USER to USER Destination
+  //getting destination from DRIVER to USER and from USER to USER Destination
   const getDestination = () => {
     if (order && order.pickedup) {
       //USER to USER destination, TO TEST: set Driver Location to user's location
@@ -192,7 +201,7 @@ const Home = () => {
               marginTop: 5,
             }}
           >
-            {order.user?.username}'s Ride Complete {""}
+            {order?.user?.username}'s Ride Complete {""}
             <FontAwesome name="thumbs-up" size={20} color="#FABB51" />
           </Text>
         </View>
@@ -243,7 +252,7 @@ const Home = () => {
               marginTop: 5,
             }}
           >
-            Dropping off {order.user?.username}
+            Dropping off {order?.user?.username}
           </Text>
         </View>
       );
@@ -296,11 +305,12 @@ const Home = () => {
               marginTop: 5,
             }}
           >
-            Picking up {order.user?.username}
+            Picking up {order?.user?.username}
           </Text>
         </View>
       );
     }
+
     if (car?.isActive) {
       return (
         <Text style={{ fontSize: 25, color: "#3E7C17", fontWeight: "500" }}>
@@ -339,7 +349,7 @@ const Home = () => {
       >
         {order && (
           <MapViewDirections
-            origin={myPosition} //Driver's POSITION
+            origin={{ latitude: car?.latitude, longitude: car?.longitude }} //Driver's POSITION
             destination={getDestination()} //User's POSITION
             onReady={goingToUser}
             apikey={ENV_GOOGLE_DIRECTION_KEY}
@@ -432,7 +442,7 @@ const Home = () => {
 
       {car?.isActive && newOrders.length > 0 && !order && (
         <NewOrderPopup
-          newOrder={newOrders[0]}
+          newOrders={newOrders[0]}
           onDecline={onDecline}
           duration={2}
           distance={1.5}

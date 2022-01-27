@@ -6,7 +6,7 @@ import { Ionicons } from "@expo/vector-icons";
 
 //
 const NewOrderPopup = ({
-  newOrder,
+  newOrders,
   onDecline,
   onAccept,
   duration,
@@ -46,7 +46,7 @@ const NewOrderPopup = ({
           <Text
             style={{ fontSize: 25, fontWeight: "bold", color: "whitesmoke" }}
           >
-            {newOrder?.type}
+            {newOrders?.type}
           </Text>
           <View style={styles.user}>
             <Entypo name="user" size={30} color="whitesmoke" />
@@ -60,7 +60,7 @@ const NewOrderPopup = ({
               paddingLeft: 5,
             }}
           >
-            {newOrder.user?.rating}
+            {newOrders.user?.rating}
           </Text>
         </View>
         <View style={styles.time}>
