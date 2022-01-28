@@ -156,6 +156,13 @@ const Home = ({ userLoc }) => {
         pickedup: order.pickedup || event.distance < 0.2, //this shows u picked up USER
         isFinished: order.pickedup && event.distance < 0.2, //this shows you complete USERS TRIP
       });
+
+      setTimeout(() => {
+        mapRef.current.fitToSuppliedMarkers(["drivers", "destination"], {
+          edgePadding: { top: 100, right: 100, bottom: 120, left: 100 },
+          animated: true,
+        });
+      }, 2000);
     }
   };
 
@@ -175,14 +182,14 @@ const Home = ({ userLoc }) => {
     };
   };
 
-  const onLayout = () => {
-    setTimeout(() => {
-      mapRef.current.fitToSuppliedMarkers(["drivers", "destination"], {
-        edgePadding: { top: 100, right: 100, bottom: 120, left: 100 },
-        animated: true,
-      });
-    }, 2000);
-  };
+  // const onLayout = () => {
+  //   setTimeout(() => {
+  //     mapRef.current.fitToSuppliedMarkers(["drivers", "destination"], {
+  //       edgePadding: { top: 100, right: 100, bottom: 120, left: 100 },
+  //       animated: true,
+  //     });
+  //   }, 2000);
+  // };
 
   //bottom NAV Views
   const bottomTitle = () => {
@@ -364,7 +371,7 @@ const Home = ({ userLoc }) => {
           latitudeDelta: 0.005,
           longitudeDelta: 0.005,
         }}
-        onLayout={onLayout}
+        // onLayout={onLayout}
       >
         {car && (
           <Marker
