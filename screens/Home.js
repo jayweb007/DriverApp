@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import {
   StyleSheet,
   View,
@@ -6,8 +6,9 @@ import {
   Dimensions,
   Platform,
   Pressable,
+  Image,
 } from "react-native";
-import MapView, { PROVIDER_GOOGLE } from "react-native-maps";
+import MapView, { Marker, PROVIDER_GOOGLE } from "react-native-maps";
 import MapViewDirections from "react-native-maps-directions";
 import { ENV_GOOGLE_DIRECTION_KEY } from "@env";
 import { Entypo } from "@expo/vector-icons";
@@ -27,9 +28,21 @@ const { width, height } = Dimensions.get("window");
 
 //
 const Home = ({ userLoc }) => {
+  const mapRef = useRef();
   const [car, setCar] = useState(null);
   const [order, setOrder] = useState(null);
   const [newOrders, setNewOrders] = useState([]);
+
+  const getImage = (type) => {
+    if (type === "UberX") {
+      return require("../assets/images/top-UberX.png");
+    }
+    if (type === "UberXL") {
+      return require("../assets/images/top-UberXL.png");
+    }
+
+    return require("../assets/images/top-Comfort.png");
+  };
 
   //getting CAR DETAILS from server via useEFFECT
   const fetchCar = async () => {
@@ -160,6 +173,15 @@ const Home = ({ userLoc }) => {
       latitude: order.originLatitude,
       longitude: order.originLongitude,
     };
+  };
+
+  const onLayout = () => {
+    setTimeout(() => {
+      mapRef.current.fitToSuppliedMarkers(["drivers", "destination"], {
+        edgePadding: { top: 100, right: 100, bottom: 120, left: 100 },
+        animated: true,
+      });
+    }, 2000);
   };
 
   //bottom NAV Views
@@ -328,6 +350,7 @@ const Home = ({ userLoc }) => {
   return (
     <View style={styles.container}>
       <MapView
+        ref={mapRef}
         style={styles.map}
         provider={PROVIDER_GOOGLE}
         mapType={Platform.OS == "android" ? "mutedStandard" : "mutedStandard"}
@@ -336,10 +359,49 @@ const Home = ({ userLoc }) => {
         initialRegion={{
           latitude: userLoc?.latitude ? userLoc.latitude : 6.50359,
           longitude: userLoc?.longitude ? userLoc.longitude : 3.37254,
-          latitudeDelta: 0.0222,
-          longitudeDelta: 0.0121,
+          // latitudeDelta: 0.0222,
+          // longitudeDelta: 0.0121,
+          latitudeDelta: 0.005,
+          longitudeDelta: 0.005,
         }}
+        onLayout={onLayout}
       >
+        {car && (
+          <Marker
+            key={car.id}
+            coordinate={{
+              latitude: car?.latitude,
+              longitude: car?.longitude,
+            }}
+            identifier="drivers"
+            // pinColor="black"
+          >
+            <Image
+              style={{
+                width: 50,
+                height: 50,
+                resizeMode: "contain",
+                transform: [
+                  {
+                    rotate: `${car?.heading}deg`,
+                  },
+                ],
+              }}
+              source={getImage(car.type)}
+            />
+          </Marker>
+        )}
+
+        {order && (
+          <Marker
+            coordinate={getDestination()}
+            pinColor="red"
+            title="Destination"
+            description="destination"
+            identifier="destination"
+          />
+        )}
+
         {order && (
           <MapViewDirections
             origin={{ latitude: car?.latitude, longitude: car?.longitude }} //Driver's POSITION
@@ -348,6 +410,7 @@ const Home = ({ userLoc }) => {
             apikey={ENV_GOOGLE_DIRECTION_KEY}
             strokeWidth={4}
             strokeColor="black"
+            timePrecision="now"
           />
         )}
       </MapView>
