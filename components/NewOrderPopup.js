@@ -51,7 +51,7 @@ const NewOrderPopup = ({
           <View style={styles.user}>
             <Entypo name="user" size={30} color="whitesmoke" />
           </View>
-          <FontAwesome name="star" size={20} color="whitesmoke" />
+          <FontAwesome name="star" size={20} color="gold" />
           <Text
             style={{
               fontSize: 20,
@@ -60,7 +60,7 @@ const NewOrderPopup = ({
               paddingLeft: 5,
             }}
           >
-            {newOrders.user?.rating}
+            {newOrders?.user?.rating ? newOrders?.user?.rating : 0}
           </Text>
         </View>
         <View style={styles.time}>
@@ -68,7 +68,7 @@ const NewOrderPopup = ({
             style={{
               fontSize: 40,
               fontWeight: "500",
-              color: "whitesmoke",
+              color: "red",
               paddingLeft: 5,
             }}
           >
@@ -78,7 +78,7 @@ const NewOrderPopup = ({
             style={{
               fontSize: 20,
               fontWeight: "500",
-              color: "whitesmoke",
+              color: "red",
               paddingLeft: 5,
               paddingTop: 15,
             }}

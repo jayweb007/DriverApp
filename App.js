@@ -1,6 +1,6 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { StatusBar } from "expo-status-bar";
-import { SafeAreaView, StyleSheet, View } from "react-native";
+import { StyleSheet, View } from "react-native";
 import Home from "./screens/Home";
 import Amplify, { API, graphqlOperation, Auth } from "aws-amplify";
 import config from "./src/aws-exports";
@@ -12,12 +12,15 @@ Amplify.configure({ ...config, Analytics: { disabled: true } });
 
 //
 const App = () => {
+  const [userLoc, setUserLoc] = useState(null);
+  //
   useEffect(() => {
     const updateUserCar = async () => {
       //Get Authenticated User
       const authenticateduser = await Auth.currentAuthenticatedUser({
         bypassCache: true,
       });
+
       if (!authenticateduser) {
         return;
       }
@@ -27,6 +30,7 @@ const App = () => {
           id: authenticateduser.attributes.sub,
         })
       );
+      setUserLoc(carData.data.getCar);
 
       if (carData.data.getCar) {
         console.log("User already has a Car assigned");
@@ -48,13 +52,12 @@ const App = () => {
 
     updateUserCar();
   }, []);
+
   //
   return (
     <View style={styles.container}>
       <StatusBar style="auto" />
-      {/* <SafeAreaView> */}
-      <Home />
-      {/* </SafeAreaView> */}
+      <Home userLoc={userLoc} />
     </View>
   );
 };

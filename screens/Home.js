@@ -26,9 +26,8 @@ const myAndroidPhone = { latitude: 6.4796062, longitude: 3.3885727 };
 const { width, height } = Dimensions.get("window");
 
 //
-const Home = () => {
+const Home = ({ userLoc }) => {
   const [car, setCar] = useState(null);
-  const [myPosition, setMyPosition] = useState(null);
   const [order, setOrder] = useState(null);
   const [newOrders, setNewOrders] = useState([]);
 
@@ -64,7 +63,7 @@ const Home = () => {
   useEffect(() => {
     fetchCar();
     fetchOders();
-  }, []);
+  }, [car]);
 
   //
   const onAccept = async (newOrder) => {
@@ -335,17 +334,11 @@ const Home = () => {
         showsUserLocation={true}
         onUserLocationChange={onUserLocationChange}
         initialRegion={{
-          latitude: 6.50359,
-          longitude: 3.37254,
+          latitude: userLoc?.latitude ? userLoc.latitude : 6.50359,
+          longitude: userLoc?.longitude ? userLoc.longitude : 3.37254,
           latitudeDelta: 0.0222,
           longitudeDelta: 0.0121,
         }}
-        // onLayout={() =>
-        //   mapRef.fitToCoordinates([myPosition, getDestination()], {
-        //     edgePadding: { top: 50, right: 50, bottom: 50, left: 50 },
-        //     animated: false,
-        //   })
-        // }
       >
         {order && (
           <MapViewDirections
@@ -440,6 +433,7 @@ const Home = () => {
         <Entypo name="menu" size={30} color="#4a4a4a" />
       </View>
 
+      {/* if driver car is active AND if there is new order greater than zero AND if driver dont have order */}
       {car?.isActive && newOrders.length > 0 && !order && (
         <NewOrderPopup
           newOrders={newOrders[0]}
