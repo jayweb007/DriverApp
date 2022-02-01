@@ -27,12 +27,13 @@ const myAndroidPhone = { latitude: 6.4796062, longitude: 3.3885727 };
 const { width, height } = Dimensions.get("window");
 
 //
-const Home = ({ userLoc }) => {
+const Home = ({ latlng }) => {
   const mapRef = useRef();
   const [car, setCar] = useState(null);
   const [order, setOrder] = useState(null);
   const [newOrders, setNewOrders] = useState([]);
 
+  //getting IMAGE
   const getImage = (type) => {
     if (type === "UberX") {
       return require("../assets/images/top-UberX.png");
@@ -362,10 +363,11 @@ const Home = ({ userLoc }) => {
         provider={PROVIDER_GOOGLE}
         mapType={Platform.OS == "android" ? "mutedStandard" : "mutedStandard"}
         showsUserLocation={true}
+        followsUserLocation={true}
         onUserLocationChange={onUserLocationChange}
         initialRegion={{
-          latitude: userLoc?.latitude ? userLoc.latitude : 6.50359,
-          longitude: userLoc?.longitude ? userLoc.longitude : 3.37254,
+          latitude: latlng?.latitude ? latlng.latitude : 6.50359,
+          longitude: latlng?.longitude ? latlng.longitude : 3.37254,
           // latitudeDelta: 0.0222,
           // longitudeDelta: 0.0121,
           latitudeDelta: 0.005,
@@ -390,7 +392,7 @@ const Home = ({ userLoc }) => {
                 resizeMode: "contain",
                 transform: [
                   {
-                    rotate: `${car?.heading}deg`,
+                    rotate: `${car?.heading ? car?.heading : 1}deg`,
                   },
                 ],
               }}
@@ -418,6 +420,7 @@ const Home = ({ userLoc }) => {
             strokeWidth={4}
             strokeColor="black"
             timePrecision="now"
+            mode="DRIVING"
           />
         )}
       </MapView>

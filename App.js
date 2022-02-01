@@ -4,6 +4,7 @@ import { StyleSheet, View } from "react-native";
 import Home from "./screens/Home";
 import Amplify, { API, graphqlOperation, Auth } from "aws-amplify";
 import config from "./src/aws-exports";
+import * as Location from "expo-location";
 import { withAuthenticator } from "aws-amplify-react-native";
 import { getCar } from "./src/graphql/queries";
 import { createCar } from "./src/graphql/mutations";
@@ -12,7 +13,39 @@ Amplify.configure({ ...config, Analytics: { disabled: true } });
 
 //
 const App = () => {
-  const [userLoc, setUserLoc] = useState(null);
+  const [latlng, setLatLng] = useState({});
+
+  const checkPermission = async () => {
+    const hasPermission = await Location.requestForegroundPermissionsAsync();
+    if (hasPermission.status === "granted") {
+      const permission = await askPermission();
+      return permission;
+    }
+    return true;
+  };
+
+  const askPermission = async () => {
+    const permission = await Location.requestForegroundPermissionsAsync();
+    return permission.status === "granted";
+  };
+
+  const getLocation = async () => {
+    try {
+      const { granted } = await Location.requestForegroundPermissionsAsync();
+      if (!granted) return;
+      const {
+        coords: { latitude, longitude },
+      } = await Location.getCurrentPositionAsync();
+      setLatLng({ latitude: latitude, longitude: longitude });
+    } catch (e) {}
+  };
+
+  useEffect(() => {
+    checkPermission();
+    getLocation();
+    console.log(latlng);
+  }, []);
+
   //
   useEffect(() => {
     const updateUserCar = async () => {
@@ -30,7 +63,7 @@ const App = () => {
           id: authenticateduser.attributes.sub,
         })
       );
-      setUserLoc(carData.data.getCar);
+      // console.log(carData.data.getCar);
 
       if (carData.data.getCar) {
         console.log("User already has a Car assigned");
@@ -57,7 +90,7 @@ const App = () => {
   return (
     <View style={styles.container}>
       <StatusBar style="auto" />
-      <Home userLoc={userLoc} />
+      <Home latlng={latlng} />
     </View>
   );
 };
