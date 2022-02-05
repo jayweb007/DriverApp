@@ -258,7 +258,7 @@ const Home = ({ latlng }) => {
                 color: "#0F0E0E",
               }}
             >
-              {order.duration ? order.duration.toFixed(1) : "0"} min
+              {order.duration ? order.duration.toFixed(0) : "0"} min
             </Text>
             <View style={[styles.user, { backgroundColor: "red" }]}>
               <Entypo name="user" size={20} color="whitesmoke" />
@@ -309,7 +309,7 @@ const Home = ({ latlng }) => {
                 // paddingLeft: 5,
               }}
             >
-              {order.duration ? order.duration.toFixed(1) : "0"} min
+              {order.duration ? order.duration.toFixed(0) : "0"} min
             </Text>
             <View style={styles.user}>
               <Entypo name="user" size={20} color="whitesmoke" />
