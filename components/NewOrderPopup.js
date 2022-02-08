@@ -1,8 +1,6 @@
-import { Pressable, StyleSheet, Text, View } from "react-native";
+import { Pressable, StyleSheet, Text, View, Image } from "react-native";
 import React from "react";
-import { Entypo } from "@expo/vector-icons";
-import { FontAwesome } from "@expo/vector-icons";
-import { Ionicons } from "@expo/vector-icons";
+import { Entypo, Ionicons, FontAwesome } from "@expo/vector-icons";
 
 //
 const NewOrderPopup = ({
@@ -28,7 +26,7 @@ const NewOrderPopup = ({
           DECLINE
         </Text>
       </Pressable>
-      <Pressable
+      {/* <Pressable
         onPress={onAccept}
         style={[
           styles.cancelButton,
@@ -39,9 +37,9 @@ const NewOrderPopup = ({
           <Ionicons name="checkmark-sharp" size={25} color="green" />
           ACCEPT
         </Text>
-      </Pressable>
+      </Pressable> */}
 
-      <View style={styles.popupContainer}>
+      <Pressable onPress={onAccept} style={styles.popupContainer}>
         <View style={styles.title}>
           <Text
             style={{ fontSize: 25, fontWeight: "bold", color: "whitesmoke" }}
@@ -67,8 +65,8 @@ const NewOrderPopup = ({
           <Text
             style={{
               fontSize: 40,
-              fontWeight: "500",
-              color: "red",
+              fontWeight: "bold",
+              color: "green",
               paddingLeft: 5,
             }}
           >
@@ -77,8 +75,8 @@ const NewOrderPopup = ({
           <Text
             style={{
               fontSize: 20,
-              fontWeight: "500",
-              color: "red",
+              fontWeight: "bold",
+              color: "green",
               paddingLeft: 5,
               paddingTop: 15,
             }}
@@ -87,11 +85,13 @@ const NewOrderPopup = ({
           </Text>
         </View>
         <View style={styles.text}>
-          <FontAwesome
-            name="star"
-            size={20}
-            color="whitesmoke"
-            style={{ marginTop: 5 }}
+          <Image
+            style={{
+              width: 40,
+              height: 40,
+              marginTop: 5,
+            }}
+            source={require("../assets/images/DualBall-Loader.gif")}
           />
           <Text
             style={{
@@ -102,10 +102,10 @@ const NewOrderPopup = ({
               paddingTop: 5,
             }}
           >
-            Toward your destination
+            Accept Order
           </Text>
         </View>
-      </View>
+      </Pressable>
     </View>
   );
 };

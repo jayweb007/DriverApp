@@ -69,7 +69,7 @@ const Home = ({ latlng }) => {
       setNewOrders(ordersData.data.listOrders.items);
       //
     } catch (e) {
-      console.error(e);
+      console.log(e);
     }
   };
 
